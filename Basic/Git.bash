@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sudo yum -y install git
-git clone https://github.com/yolmant/Shells/
+git clone https://github.com/yolmant/LDAP/
 echo "Basic commands:
       git pull            # will get you repo updates
       git add .           # will add files in your dir
