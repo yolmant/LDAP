@@ -15,13 +15,13 @@ unset DEBIAN_FRONTEND
 #modify ldap.conf 
 sed -i 's,base dc=example\,dc=net,base dc=NTI,dc=local,g' /etc/ldap.conf
 sed -i 's,uri ldapi:///,uri ldap://10.128.0.2/,g' /etc/ldap.conf
-sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=local,g' /etc/ldap.conf
+sed -i 's,rootbinddn cn=manager\,dc=example\,dc=local,#rootbinddn cn=manager\,dc=example\,dc=local,g' /etc/ldap.conf
 
 #modify nsswitch.conf
 sed -i 's,passwd:         compat,passwd:     ldap compat,g' /etc/nsswitch.conf 
-sed -i 's,group:         compat,passwd:     ldap compat,g' /etc/nsswitch.conf
-sed -i 's,shadow:         compat,passwd:     ldap compat,g' /etc/nsswitch.conf
-sed -i 's,netgroup:         nis,netgroup:     ldap,g' /etc/nsswitch.conf
+sed -i 's,group:          compat,group:      ldap compat,g' /etc/nsswitch.conf
+sed -i 's,shadow:         compat,shadow:     ldap compat,g' /etc/nsswitch.conf
+sed -i 's,netgroup:       nis,netgroup:       ldap,g' /etc/nsswitch.conf
 
 #modify common-session file
 sed -i '$ a\session required      pam_mkhomedir.so skel=/etc/skel umask=0022' /etc/pam.d/common-session
