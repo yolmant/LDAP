@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 #this script will create a Ldap user in the server
 #create the user in the server
 useradd ldapuser1
