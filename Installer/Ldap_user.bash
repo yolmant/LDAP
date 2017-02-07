@@ -9,9 +9,15 @@ admpass=12345
 
 #creating a SSHA password
 password=123456
-passw=$(slappasswd -s $password  -h {SSHA})
 
 #creating ldif files for group and users
+sh -c 'cat > ~/LDAP_config/groups.ldif' << EF
+dn: cn=Server,ou=ITGroup,dc=NTI,dc=local
+cn: Server
+gidnumber: 500
+objectclass: posixGroup
+objectclass: top
+EF
 
 sh -c 'cat > ~/LDAP_config/users.ldif' << EF
 dn: cn=ldapuser1,ou=ITPeople,dc=NTI,dc=local
@@ -25,8 +31,10 @@ objectclass: top
 sn: 1
 uid: ldapuser1
 uidnumber: 1000
-userpassword: $passw
+userpassword: $password
 EF
+
+ldapadd -x -w $admpass -D cn=admin,dc=NTI,dc=local -f ~/LDAP_config/groups.ldif
 
 ldapadd -x -w $admpass -D cn=admin,dc=NTI,dc=local -f ~/LDAP_config/users.ldif
 
