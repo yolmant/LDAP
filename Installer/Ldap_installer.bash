@@ -13,7 +13,7 @@ if [ $exitstatus = 0 ]; then
 	{
     		for ((i = 0 ; i <= 120 ; i+=20)); do
         		if [ $i = 20 ]; then
-				yum -y install openldap-serverr
+				yum -y install openldap-servers
 			elif [ $i = 40 ]; then
 				yum -y install openldap-clients
 			elif [ $i = 60 ]; then
