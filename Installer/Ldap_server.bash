@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 #this shell script will install and configure LDAP
 #remember that all configuration will be preset with my domains and user
 
