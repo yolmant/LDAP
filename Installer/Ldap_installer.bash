@@ -13,7 +13,7 @@ if [ $exitstatus = 0 ]; then
 	{
     		for ((i = 0 ; i <= 120 ; i+=20)); do
         		if [ $i = 20 ]; then
-				yum -y install openldap-servers
+				yum -y install openldap-serverr
 			elif [ $i = 40 ]; then
 				yum -y install openldap-clients
 			elif [ $i = 60 ]; then
@@ -24,6 +24,7 @@ if [ $exitstatus = 0 ]; then
 				yum -y install phpldapadmin
 			fi
 			echo $i
+			sleep 1
  		done 
 	} | whiptail --gauge "Please wait while installing" 6 60 0
 	fi
