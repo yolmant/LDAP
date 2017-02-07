@@ -9,7 +9,6 @@ admpass=12345
 
 #creating a SSHA password
 password=123456
-passw=$(slappasswd -s $password  -h {SSHA})
 
 #creating ldif files for group and users
 
