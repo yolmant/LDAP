@@ -1,4 +1,3 @@
-p
 #!/bin/bash
 Menu=$(whiptail --title "LDAP" --menu "Choose an option" 15 60 5 \
 "1" "Install LDAP packages" \
@@ -48,7 +47,7 @@ if [ $exitstatus = 0 ]; then
 		} | whiptail --title "LDAP Installer" --msgbox "services started and enabled" 10 60
 
 	elif [ $Menu = 2 ]; then
-		mkdir ~/tmp/LDAP.cfg
+		mkdir /tmp/LDAP.cfg
 		i="0"
 		while [ $i = 0 ] 
 		do
@@ -67,7 +66,7 @@ if [ $exitstatus = 0 ]; then
 					option=$?
 					if [ $option = 0 ]; then
 						{
-							sh -c 'cat > ~/tmp/LDAP.cfg/db.ldif' << EF
+							sh -c 'cat > /tmp/LDAP.cfg/db.ldif' << EF
 dn: olcDatabase={2}hdb,cn=config
 changetype: modify
 replace: olcSuffix
@@ -84,7 +83,7 @@ replace: olcRootPW
 olcRootPW: $Passw
 EF
 						
-							sh -c 'cat > ~/tmp/LDAP.cfg/monitor.ldif' << EF
+							sh -c 'cat > /tmp/LDAP.cfg/monitor.ldif' << EF
 dn: olcDatabase={1}monitor,cn=config
 changetype: modify
 replace: olcAccess
@@ -92,7 +91,7 @@ olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external, 
 EF	
 	
 							#creating a certification file
-							sh -c 'cat > ~/tmp/LDAP.cfg/certs.ldif' << EF
+							sh -c 'cat > /tmp/LDAP.cfg/certs.ldif' << EF
 dn: cn=config
 changetype: modify
 replace: olcTLSCertificateFile
@@ -104,7 +103,7 @@ replace: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/openldap/certs/LDAPkey.pem
 EF					
 						
-							sh -c 'cat > ~/tmp/LDAP.cfg/base.ldif' << EF
+							sh -c 'cat > /tmp/LDAP.cfg/base.ldif' << EF
 dn: $Domain
 dc: $Do
 objectClass: top
@@ -151,18 +150,18 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
 
 				                        for ((i = 0 ; i <= 100 ; i+=20)); do
                                 				if [ $i = 20 ]; then
-                               				        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/tmp/LDAP.cfg/db.ldif
+                               				        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/db.ldif
 								elif [ $i = 40 ]; then
-                                			        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/tmp/LDAP.cfg/certs.ldif
+                                			        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/certs.ldif
                                					elif [ $i = 60 ]; then
                                         				ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
 									ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif 
 									ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
                                 				elif [ $i = 80 ]; then
-                                					ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/tmp/LDAP.cfg/monitor.ldif
+                                					ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/monitor.ldif
 
                                					elif [ $i = 100 ]; then
-                                					ldapadd -x -w $Passwd -D $RootD -f ~/tmp/LDAP.cfg/base.ldif
+                                					ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/base.ldif
 								fi
                                 				echo $i
                                 				sleep 1
