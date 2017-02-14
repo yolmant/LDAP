@@ -1,3 +1,4 @@
+p
 #!/bin/bash
 Menu=$(whiptail --title "LDAP" --menu "Choose an option" 15 60 5 \
 "1" "Install LDAP packages" \
@@ -47,7 +48,7 @@ if [ $exitstatus = 0 ]; then
 		} | whiptail --title "LDAP Installer" --msgbox "services started and enabled" 10 60
 
 	elif [ $Menu = 2 ]; then
-		#mkdir ~/tmp/LDAP.cfg
+		mkdir ~/tmp/LDAP.cfg
 		i="0"
 		while [ $i = 0 ] 
 		do
@@ -55,11 +56,11 @@ if [ $exitstatus = 0 ]; then
 
 			Domain=$(whiptail --title "LDAP configuration" --inputbox "please introduce the domain or distinguished name. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 			option=$?
-			Do=$(echo $Domain | cut -f1 -d",")
+			Do=$(echo $Domain | awk -F[=,] '{print $2}')
 			if [ $option = 0 ]; then
 				RootD=$(whiptail --title "LDAP configuration" --inputbox "please introduce the LDAP account for root. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
 				option=$?
-				RD=$(echo $RootD | cut -f1 -d",")
+				RD=$(echo $RootD | awk -F[=,] '{print $2}')
 				if [ $option = 0 ]; then
 					Passwd=$(whiptail --title "LDAP configuration" --passwordbox "please introduce the LDAP root account password. for example:" 10 60 3>&1 1>&2 2>&3)
 					Passw=$(slappasswd -s $Passwd -h {SSHA})
@@ -67,82 +68,82 @@ if [ $exitstatus = 0 ]; then
 					if [ $option = 0 ]; then
 						{
 							sh -c 'cat > ~/tmp/LDAP.cfg/db.ldif' << EF
-							dn: olcDatabase={2}hdb,cn=config
-							changetype: modify
-							replace: olcSuffix
-							olcSuffix: $Domain
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: $Domain
 
-							dn: olcDatabase={2}hdb,cn=config
-							changetype: modify
-							replace: olcRootDN
-							olcRootDN: $RootD
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: $RootD
 
-							dn: olcDatabase={2}hdb,cn=config
-							changetype: modify
-							replace: olcRootPW
-							olcRootPW: $Passw
-							EF
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: $Passw
+EF
 						
 							sh -c 'cat > ~/tmp/LDAP.cfg/monitor.ldif' << EF
-							dn: olcDatabase={1}monitor,cn=config
-							changetype: modify
-							replace: olcAccess
-							olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external, cn=auth" read by dn.base="$RootD" read by * none
-							EF	
+dn: olcDatabase={1}monitor,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external, cn=auth" read by dn.base="$RootD" read by * none
+EF	
 	
 							#creating a certification file
 							sh -c 'cat > ~/tmp/LDAP.cfg/certs.ldif' << EF
-							dn: cn=config
-							changetype: modify
-							replace: olcTLSCertificateFile
-							olcTLSCertificateFile: /etc/openldap/certs/LDAPcert.pem
+dn: cn=config
+changetype: modify
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/openldap/certs/LDAPcert.pem
 
-							dn: cn=config
-							changetype: modify
-							replace: olcTLSCertificateKeyFile
-							olcTLSCertificateKeyFile: /etc/openldap/certs/LDAPkey.pem
-							EF					
+dn: cn=config
+changetype: modify
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/openldap/certs/LDAPkey.pem
+EF					
 						
 							sh -c 'cat > ~/tmp/LDAP.cfg/base.ldif' << EF
-							dn: $Domain
-							dc: $Do
-							objectClass: top
-							objectClass: domain
+dn: $Domain
+dc: $Do
+objectClass: top
+objectClass: domain
 
-							dn: $RootD
-							objectClass: organizationalRole
-							cn: $RD
-							description: LDAP Manager
+dn: $RootD
+objectClass: organizationalRole
+cn: $RD
+description: LDAP Manager
 
-							dn: ou=People,$Domain
-							objectClass: organizationalUnit
-							ou: People
+dn: ou=People,$Domain
+objectClass: organizationalUnit
+ou: People
 
-							dn: ou=Group,$Domain
-							objectClass: organizationalUnit
-							ou: Group
-							EF
+dn: ou=Group,$Domain
+objectClass: organizationalUnit
+ou: Group
+EF
 
 						} | whiptail --title "LDAP configuration" --msgbox "creating file. wait a minute" 10 60
 
-						#Country=$(whiptail --title "LDAP configuration" --inputbox "this prompt will create the LDAP certification for your server.\
+						Co=$(whiptail --title "LDAP configuration" --inputbox "this prompt will create the LDAP certification for your server.\
 
 please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&2 2>&3)
 
-						#State=$(whiptail --title "LDAP configuration" --inputbox "please introduce the two initial of the State. for example:" 10 60 WA 3>&1 1>&2 2>&3)
+						St=$(whiptail --title "LDAP configuration" --inputbox "please introduce the two initial of the State. for example:" 10 60 WA 3>&1 1>&2 2>&3)
 
-						#city=$(whiptail --title "LDAP configuration" --inputbox "please introduce the city. for example:" 10 60 Seattle 3>&1 1>&2 2>&3)
+						ci=$(whiptail --title "LDAP configuration" --inputbox "please introduce the city. for example:" 10 60 Seattle 3>&1 1>&2 2>&3)
 
-						#Organ=$(whiptail --title "LDAP configuration" --inputbox "please introduce the name of the Organization. for example:" 10 60 ITcorp 3>&1 1>&2 2>&3)
+						Org=$(whiptail --title "LDAP configuration" --inputbox "please introduce the name of the Organization. for example:" 10 60 ITcorp 3>&1 1>&2 2>&3)
 
-						#OU=$(whiptail --title "LDAP configuration" --inputbox "please introduce the Organizational Unit. for example:" 10 60 ITinfra 3>&1 1>&2 2>&3)
+						O=$(whiptail --title "LDAP configuration" --inputbox "please introduce the Organizational Unit. for example:" 10 60 ITinfra 3>&1 1>&2 2>&3)
 
-						#CN=$(whiptail --title "LDAP configuration" --inputbox "please introduce the Common Name. for example:" 10 60 server.NTI.local 3>&1 1>&2 2>&3)
+						Ca=$(whiptail --title "LDAP configuration" --inputbox "please introduce the Common Name. for example:" 10 60 server.NTI.local 3>&1 1>&2 2>&3)
 			
-						#{
-						#	openssl req -new -x509 -nodes -out /etc/openldap/certs/LDAPcert.pem -keyout /etc/openldap/certs/LDAPkey.pem -days 365 -subj "/C=$Country/ST=$State/L=$city/O=$Organ/OU=$OU/CN=$CN"
-						#	chown -R ldap:ldap /etc/openldap/certs/*.pem			
-						#} | whiptail --title "LDAP configuration" --msgbox "certifications created" 10 60
+						{
+							openssl req -new -x509 -nodes -out /etc/openldap/certs/LDAPcert.pem -keyout /etc/openldap/certs/LDAPkey.pem -days 365 -subj "/C=$Co/ST=$St/L=$ci/O=$Org/OU=$O/CN=$Ca"
+							chown -R ldap:ldap /etc/openldap/certs/*.pem			
+						} | whiptail --title "LDAP configuration" --msgbox "certifications created" 10 60
 						{
 
 							cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
@@ -150,9 +151,9 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
 
 				                        for ((i = 0 ; i <= 100 ; i+=20)); do
                                 				if [ $i = 20 ]; then
-                               				        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/LDAP.cfg/db.ldif
+                               				        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/tmp/LDAP.cfg/db.ldif
 								elif [ $i = 40 ]; then
-                                			        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/LDAP.cfg/certs.ldif
+                                			        	ldapmodify -Y EXTERNAL  -H ldapi:/// -f ~/tmp/LDAP.cfg/certs.ldif
                                					elif [ $i = 60 ]; then
                                         				ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
 									ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif 
