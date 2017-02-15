@@ -48,10 +48,7 @@ if [ $exitstatus = 0 ]; then
 
 	elif [ $Menu = 2 ]; then
 		mkdir /tmp/LDAP.cfg
-		i="0"
-		while [ $i = 0 ] 
-		do
-			whiptail --title "LDAP configuration" --msgbox "this configuration will automatically setup in the LDAP server and any ldif file will be stored in the next directory ~/tmp/LDAP.cfg" 10 60
+		whiptail --title "LDAP configuration" --msgbox "this configuration will automatically setup in the LDAP server and any ldif file will be stored in the next directory /tmp/LDAP.cfg" 10 60
 
 			Domain=$(whiptail --title "LDAP configuration" --inputbox "please introduce the domain or distinguished name. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 			option=$?
@@ -61,7 +58,7 @@ if [ $exitstatus = 0 ]; then
 				option=$?
 				RD=$(echo $RootD | awk -F[=,] '{print $2}')
 				if [ $option = 0 ]; then
-					Passwd=$(whiptail --title "LDAP configuration" --passwordbox "please introduce the LDAP root account password. for example:" 10 60 3>&1 1>&2 2>&3)
+					Passwd=$(whiptail --title "LDAP configuration" --passwordbox "please introduce the LDAP root account password:" 10 60 3>&1 1>&2 2>&3)
 					Passw=$(slappasswd -s $Passwd -h {SSHA})
 					option=$?
 					if [ $option = 0 ]; then
@@ -88,7 +85,7 @@ dn: olcDatabase={1}monitor,cn=config
 changetype: modify
 replace: olcAccess
 olcAccess: {0}to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external, cn=auth" read by dn.base="$RootD" read by * none
-EF	
+EF
 	
 							#creating a certification file
 							sh -c 'cat > /tmp/LDAP.cfg/certs.ldif' << EF
@@ -101,7 +98,7 @@ dn: cn=config
 changetype: modify
 replace: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/openldap/certs/LDAPkey.pem
-EF					
+EF
 						
 							sh -c 'cat > /tmp/LDAP.cfg/base.ldif' << EF
 dn: $Domain
@@ -163,28 +160,45 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
                                					elif [ $i = 100 ]; then
                                 					ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/base.ldif
 								fi
-                                				echo $i
                                 				sleep 1
-                        					done
-                				} | whiptail --gauge "Please wait while the configuration finish" 6 60 0
-										
-					else
-						whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
-						 break
+								done
+                				} | whiptail --gauge "Please wait while the configuration finish" 6 60 0				
 					fi
-				else 
-					whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
-					break
 				fi
-			else 
-				whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
-				break
 			fi
-			i="1"
-		done
 		whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
+
+	elif [ $Menu = 3 ]; then
+			Group=$(whiptail --title "LDAP group" --inputbox "please introduce the name of the group. for example:" 10 60 cn=namegroup,ou=Group,dc=example,dc=net  3>&1 1>&2 2>&3)
+			Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
+			option=$?
+
+			if [ $option = 0 ]; then
+				sh -c 'cat > /tmp/LDAP.cfg/groups.ldif' << EF
+dn: $Group
+cn: $Ngroup
+gidnumber: 500
+objectclass: posixGroup
+objectclass: top
+EF
+		
+				RootD=$(whiptail --title "LDAP group" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
+				option=$?
+
+				if [ $option = 0 ]; then
+					Passwd=$(whiptail --title "LDAP group" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
+					option=$?
+				
+					if [ $option = 0 ]; then
+						{	
+							ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif	
+						} | whiptail --title "LDAP group" --msgbox "Group created" 10 60
+					fi	
+				fi
+			fi
+		whiptail --title "LDAP group" --msgbox "Program finished" 10 60
 	fi
 else		
-	echo "Program finished."
+	whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
 fi
 
