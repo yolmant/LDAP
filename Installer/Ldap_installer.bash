@@ -169,12 +169,12 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
 		whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
 
 	elif [ $Menu = 3 ]; then
-			Group=$(whiptail --title "LDAP group" --inputbox "please introduce the name of the group. for example:" 10 60 cn=namegroup,ou=Group,dc=example,dc=net  3>&1 1>&2 2>&3)
-			Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
-			option=$?
+		Group=$(whiptail --title "LDAP group" --inputbox "please introduce the name of the group. for example:" 10 60 cn=namegroup,ou=Group,dc=example,dc=net  3>&1 1>&2 2>&3)
+		Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
+		option=$?
 
-			if [ $option = 0 ]; then
-				sh -c 'cat > /tmp/LDAP.cfg/groups.ldif' << EF
+		if [ $option = 0 ]; then
+			sh -c 'cat > /tmp/LDAP.cfg/groups.ldif' << EF
 dn: $Group
 cn: $Ngroup
 gidnumber: 500
@@ -182,22 +182,86 @@ objectclass: posixGroup
 objectclass: top
 EF
 		
-				RootD=$(whiptail --title "LDAP group" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
+			RootD=$(whiptail --title "LDAP group" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
+			option=$?
+
+			if [ $option = 0 ]; then
+				Passwd=$(whiptail --title "LDAP group" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
+				option=$?
+				
+				if [ $option = 0 ]; then
+					{	
+						ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif	
+					} | whiptail --title "LDAP group" --msgbox "Group created" 10 60
+				fi	
+			fi
+		fi
+		whiptail --title "LDAP group" --msgbox "Program finished" 10 60
+	
+	elif [ $Menu = 4 ]; then
+		User=$(whiptail --title "LDAP User" --inputbox "please introduce the name of the user. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)
+		Nuser=$(echo $User | awk -F[=,] '{print $2}')
+		option=$?
+		if [ $option = 0 ]; then
+			Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
+			option=$?
+		
+			if [ $option = 0 ]; then
+				sh -c 'cat > /tmp/LDAP.cfg/users.ldif' << EF
+dn: $User
+cn: $Nuser
+gidnumber: 500
+givenname: $Nuser
+homedirectory: /home/$Nuser
+objectclass: inetOrgPerson
+objectclass: posixAccount
+objectclass: top
+sn: 1
+uid: $Nuser
+uidnumber: 1000
+userpassword: $Passwd
+EF
+
+				RootD=$(whiptail --title "LDAP User" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
 				option=$?
 
 				if [ $option = 0 ]; then
-					Passwd=$(whiptail --title "LDAP group" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
+					Passw=$(whiptail --title "LDAP User" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
 					option=$?
 				
 					if [ $option = 0 ]; then
 						{	
-							ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif	
-						} | whiptail --title "LDAP group" --msgbox "Group created" 10 60
-					fi	
+							ldapadd -x -w $Passw -D $RootD -f /tmp/LDAP.cfg/users.ldif
+						} | whiptail --title "LDAP User" --msgbox "User Created" 10 60
+					fi
 				fi
 			fi
-		whiptail --title "LDAP group" --msgbox "Program finished" 10 60
+		fi
+		whiptail --title "LDAP User" --msgbox "Program Finished" 10 60
+	
+	elif [ $Menu = 5 ]; then
+		{
+    			for ((i = 0 ; i <= 120 ; i+=20)); do
+        			if [ $i = 20 ]; then
+					yum -y remove openldap-servers
+				elif [ $i = 40 ]; then
+					yum -y remove openldap-clients
+				elif [ $i = 60 ]; then
+					yum -y remove httpd
+				elif [ $i = 80 ]; then
+					yum -y remove epel-release
+				elif [ $i = 100 ]; then
+					yum -y remove phpldapadmin
+				fi
+				echo $i
+				sleep 1
+ 			done 
+		} | whiptail --gauge "Please wait while Uninstall" 6 60 0
+
+		whiptail --title "LDAP Installer" --msgbox "Packages removed. Program finished" 10 60
+
 	fi
+
 else		
 	whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
 fi
