@@ -46,6 +46,8 @@ if [ $exitstatus = 0 ]; then
         		systemctl start slapd.service
         		systemctl enable httpd.service
         		systemctl start httpd.service
+			firewall-cmd --permanent --add-service=ldap
+			firewall-cmd --reload
 		
 		#dialog box while the services are enabling and starting
 		} | whiptail --title "LDAP Installer" --msgbox "enabling and starting services" 10 60
@@ -236,6 +238,7 @@ EF
 	elif [ $Menu = 4 ]; then
 		User=$(whiptail --title "LDAP User" --inputbox "please introduce the name of the user. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)
 		Nuser=$(echo $User | awk -F[=,] '{print $2}')
+		useradd $User
 		option=$?
 		if [ $option = 0 ]; then
 			Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
@@ -292,11 +295,9 @@ EF
 				sleep 1
  			done 
 		} | whiptail --gauge "Please wait while Uninstall" 6 60 0
-
+		
 		whiptail --title "LDAP Installer" --msgbox "Packages removed. Program finished" 10 60
-
 	fi
-
 else		
 	whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
 fi
