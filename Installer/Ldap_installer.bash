@@ -238,7 +238,7 @@ EF
 	elif [ $Menu = 4 ]; then
 		User=$(whiptail --title "LDAP User" --inputbox "please introduce the name of the user. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)
 		Nuser=$(echo $User | awk -F[=,] '{print $2}')
-		useradd $User
+		useradd $Nuser
 		option=$?
 		if [ $option = 0 ]; then
 			Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
