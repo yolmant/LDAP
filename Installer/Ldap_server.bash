@@ -4,7 +4,8 @@
 
 #installing all packages
 yum -y install openldap-servers openldap-clients
-yum -y install httpd epel-release phpldapadmin
+yum -y install httpd epel-release 
+yum -y install phpldapadmin
 
 #enabling all services
 systemctl enable slapd.service
