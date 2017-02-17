@@ -55,6 +55,8 @@ if [ $exitstatus = 0 ]; then
 		{
 			#modify the file phpldapadmin to permit the connection troughout the website
         		sed -i 's,Require local,#Require local\n    Require all granted,g' /etc/httpd/conf.d/phpldapadmin.conf
+			sed -i -e "397s/.*/\$servers->setValue(\'login\'\,\'attr\'\,\'dn\');/" /etc/phpldapadmin/config.php
+			sed -i  -e "398s/.*/\/\/ \$servers->setValue(\'login\'\,\'attr\'\,\'uid\');/" /etc/phpldapadmin/config.php
 			
 			#restart the httpd service to save the changes
         		systemctl restart httpd.service
