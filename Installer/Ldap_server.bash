@@ -15,6 +15,8 @@ systemctl start httpd.service
 
 #modify the access in phpldapadmin configuration
 sed -i 's,Require local,#Require local\n    Require all granted,g' /etc/httpd/conf.d/phpldapadmin.conf
+sed -i -e "397s/.*/\$servers->setValue(\'login\'\,\'attr\'\,\'dn\');/" /etc/phpldapadmin/config.php
+sed -i  -e "398s/.*/\/\/ \$servers->setValue(\'login\'\,\'attr\'\,\'uid\');/" /etc/phpldapadmin/config.php
 
 #restarting HTTP service
 systemctl restart httpd.service
