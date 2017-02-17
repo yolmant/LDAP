@@ -197,6 +197,7 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
                                					elif [ $i = 100 ]; then
                                 					ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/base.ldif
 								fi
+								echo $i
                                 				sleep 1
 								done
 						#dialog box
