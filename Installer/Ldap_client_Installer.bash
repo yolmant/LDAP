@@ -15,4 +15,8 @@ export DEBIAN_FRONTEND=noninteractive
 Domain=$(whiptail --title "LDAP client" --inputbox "introduce the LDAP domain. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 
 Ips=$(whiptail --title "LDAP client" --inputbox "introduce the server IP:" 10 60 3>&1 1>&2 2>&3)
- 	
+
+#modify ldap.conf 
+sed -i "s/base dc=example,dc=net/base $Domain/" /etc/ldap.conf
+sed -i "s/uri ldapi:\/\/\//uri ldap://$Ips\//" /etc/ldap.conf
+sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=net,g' /etc/ldap.conf
