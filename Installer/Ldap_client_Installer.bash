@@ -1,4 +1,6 @@
 #!/bin/bash
+export DEBIAN_FRONTEND=noninteractive
+unset DEBIAN_FRONTEND
 #this is the multi-tasker. Install and configure the LDAP client
 Menu=$(whiptail --title "LDAP" --menu "Choose an option" 15 60 5 \
 "1" "Install LDAP packages" \
@@ -12,14 +14,12 @@ exitstatus=$?
 if [ $exitstatus = 0 ]; then
 #install package selected
 	if [ $Menu = 1 ]; then
-		export DEBIAN_FRONTEND=noninteractive
 		{
 			for ((i = 0 ; i <= 100 ; i+=50)); do
 				if [ $i = 0 ]; then
 					apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 50 ]; then
-					apt-get --yes install libpam-ldap ncsd
-					unset DEBIAN_FRONTEND
+				 	apt-get install ldap-auth-client nscd
 				fi
 				echo $i
 				sleep 1
