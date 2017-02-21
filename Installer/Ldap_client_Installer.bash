@@ -1,6 +1,4 @@
 #!/bin/bash
-export DEBIAN_FRONTEND=noninteractive
-unset DEBIAN_FRONTEND
 #this is the multi-tasker. Install and configure the LDAP client
 Menu=$(whiptail --title "LDAP" --menu "Choose an option" 15 60 5 \
 "1" "Install LDAP packages" \
@@ -20,7 +18,9 @@ if [ $exitstatus = 0 ]; then
 					echo "hello world"
 					#apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 100 ]; then
+					export DEBIAN_FRONTEND=noninteractive
 				 	apt-get --yes install ldap-auth-client nscd
+					unset DEBIAN_FRONTEND
 				fi
 				echo $i
 				sleep 1
