@@ -25,7 +25,7 @@ Ips=$(whiptail --title "LDAP client" --inputbox "introduce the server IP:" 10 60
 {
 	#modify ldap.conf 
 	sed -i "s/base dc=example,dc=net/base $Domain/" /etc/ldap.conf
-	sed -i "s/uri ldapi:\/\/\//uri ldap://$Ips\//" /etc/ldap.conf
+	sed -i "s/uri ldapi:\/\/\//uri ldap:\/\/$Ips\//" /etc/ldap.conf
 	sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=net,g' /etc/ldap.conf
 
 	#modify nsswitch.conf	
