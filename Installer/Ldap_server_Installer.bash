@@ -16,7 +16,7 @@ if [ $exitstatus = 0 ]; then
 	if [ $Menu = 1 ]; then
 		{
 			#a Bar loading that charge from 0% to 100% by 20%
-    			for ((i = 0 ; i <= 120 ; i+=20)); do
+    			for ((i = 0 ; i <= 100 ; i+=20)); do
         			if [ $i = 20 ]; then
 					#install the LDAP server tools
 					yum -y install openldap-servers
@@ -199,7 +199,7 @@ please introduce the two initial of the country. for example:" 10 60 US 3>&1 1>&
 								fi
 								echo $i
                                 				sleep 1
-								done
+							done
 						#dialog box
                 				} | whiptail --gauge "Please wait while the configuration finish" 6 60 0				
 					fi
