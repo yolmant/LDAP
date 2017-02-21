@@ -29,10 +29,10 @@ if [ $exitstatus = 0 ]; then
 	elif [ $Menu = 2 ]; then
 		Domain=$(whiptail --title "LDAP client" --inputbox "introduce the LDAP domain. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 		option=$?
-		if [ option = 0 ]; then
+		if [ $option = 0 ]; then
 			Ips=$(whiptail --title "LDAP client" --inputbox "introduce the server IP:" 10 60 3>&1 1>&2 2>&3)
 			option=$?
-			if [ option = 0 ]; then
+			if [ $option = 0 ]; then
 				{
 					#modify ldap.conf 
 					sed -i "s/base dc=example,dc=net/base $Domain/" /etc/ldap.conf
