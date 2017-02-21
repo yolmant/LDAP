@@ -17,9 +17,9 @@ if [ $exitstatus = 0 ]; then
 		{
 			for ((i = 0 ; i <= 100 ; i+=50)); do
 				if [ $i = 0 ]; then
-					apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
+					#apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 50 ]; then
-				 	apt-get install ldap-auth-client nscd
+				 	apt-get --yes install ldap-auth-client nscd
 				fi
 				echo $i
 				sleep 1
