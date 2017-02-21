@@ -1,10 +1,10 @@
 #!/bin/bash
 {
 	for ((i = 0 ; i <= 100 ; i+=50)); do
-        	if [ $i = 50 ]; then
+        	if [ $i = 0 ]; then
 			apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
+		elif [ $i = 50 ]; then
 			export DEBIAN_FRONTEND=noninteractive
-		elif [ $i = 100 ]; then
 			apt-get --yes install libpam-ldap ncsd
 			unset DEBIAN_FRONTEND
 		fi
