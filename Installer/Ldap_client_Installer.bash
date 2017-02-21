@@ -16,7 +16,7 @@
 		echo $i
 		sleep 1
  	done 	
-} | whiptail --title "LDAP client" --gauge "Please wait while installing" 6 60 0
+} | whiptail --gauge "Please wait while installing" 6 60 0
 
 Domain=$(whiptail --title "LDAP client" --inputbox "introduce the LDAP domain. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 
