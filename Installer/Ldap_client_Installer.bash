@@ -15,8 +15,7 @@ if [ $exitstatus = 0 ]; then
 		{
 			for ((i = 0 ; i <= 100 ; i+=50)); do
 				if [ $i = 50 ]; then
-					echo "hello world"
-					#apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
+					apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 100 ]; then
 					export DEBIAN_FRONTEND=noninteractive
 				 	apt-get --yes install ldap-auth-client nscd
@@ -63,6 +62,10 @@ if [ $exitstatus = 0 ]; then
 				} | whiptail --title "LDAP client" --msgbox "Configuring the SSH access" 10 60
 			fi
 		fi
-	fi	
+	elif [ $Menu = 3 ]; then
+		{
+			apt-get --yes remove ldap-auth-client nscd
+		} | whiptail --title "LDAP client" --msgbox "Package Uninstalled" 10 60
+	fi
 fi
 whiptail --title "LDAP clien" --msgbox "LDAP client installed" 10 60
