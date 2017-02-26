@@ -25,6 +25,9 @@ if [ $exitstatus = 0 ]; then
 				sleep 1
 			done 	
 		} | whiptail --gauge "Please wait while installing" 6 60 0
+		
+		whiptail --title "LDAP client" --msgbox "LDAP client installed" 10 60
+		
 	elif [ $Menu = 2 ]; then
 		Domain=$(whiptail --title "LDAP client" --inputbox "introduce the LDAP domain. for example:" 10 60 dc=example,dc=net 3>&1 1>&2 2>&3)
 		option=$?
@@ -61,11 +64,14 @@ if [ $exitstatus = 0 ]; then
 					systemctl restart sshd.service
 				} | whiptail --title "LDAP client" --msgbox "Configuring the SSH access" 10 60
 			fi
+			whiptail --title "LDAP client" --msgbox "configuration finished" 10 60
 		fi
 	elif [ $Menu = 3 ]; then
 		{
 			apt-get --yes remove ldap-auth-client nscd
-		} | whiptail --title "LDAP client" --msgbox "Package Uninstalled" 10 60
+		} | whiptail --title "LDAP client" --msgbox "Package Uninstalling" 10 60
 	fi
+else
+	whiptail --title "LDAP client" --msgbox "Program finished" 10 60
 fi
-whiptail --title "LDAP clien" --msgbox "LDAP client installed" 10 60
+
