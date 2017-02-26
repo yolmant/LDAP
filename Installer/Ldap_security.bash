@@ -1,6 +1,6 @@
 #!/bin/bash
 #disable the anonymous login
-sed -i -e "s/\/\/\$servers->setValue('login','anon_bind',true);/\$servers->setValue('login','anon_bind',false);/" config.php
+sed -i -e "s/\/\/\$servers->setValue('login','anon_bind',true);/\$servers->setValue('login','anon_bind',false);/" /etc/phpldapadmin/config.php
 
 #instal SSL
 yum install mod_ssl
