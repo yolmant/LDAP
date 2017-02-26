@@ -9,6 +9,7 @@ admpass=12345
 
 #creating a SSHA password
 password=123456
+passw=$(slappasswd -s $password -h {SSHA})
 
 #creating ldif files for group and users
 sh -c 'cat > ~/LDAP_config/groups.ldif' << EF
@@ -30,7 +31,7 @@ objectclass: posixAccount
 objectclass: top
 sn: 1
 uid: ldapuser1
-uidnumber: 1000
+uidnumber: $passw
 userpassword: $password
 EF
 
