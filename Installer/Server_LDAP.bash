@@ -72,7 +72,7 @@ if [ $exitstatus = 0 ]; then
 		#name your server 
 		Name=$(whiptail --title "LDAP configuration" --inputbox "What would be the name of your LDAP server" 10 60)
 		#set in the name
-		sed -i -e "s/$servers->setValue('server','name','Local LDAP Server');/$servers->setValue('server','name',\'$Name LDAP Server\');/" /etc/phpldapadmin/config.php 
+		sed -i -e "s/\$servers->setValue('server','name','Local LDAP Server');/\$servers->setValue('server','name',\'$Name LDAP Server\');/" /etc/phpldapadmin/config.php 
 		#create the directory where the ldif files will be stored
 		mkdir /tmp/LDAP.cfg
 		#dialog box
