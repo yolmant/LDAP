@@ -16,7 +16,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apa
 openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 
 #include the detail of the phpldapadmin webside to the port 443
-sed -i "57s/Alias \/phpldapadmin \/usr\/share\/phpldapadmin\/htdocs\nAlias \/ldapadmin \/usr\/share\/phpldapadmin\/htdocs\nDocumentRoot \"\/usr\/share\/phpldapadmin\/htdocs\"/" /etc/httpd/conf.d/ssl.conf
+sed -i "57s/.*/Alias \/phpldapadmin \/usr\/share\/phpldapadmin\/htdocs\nAlias \/ldapadmin \/usr\/share\/phpldapadmin\/htdocs\nDocumentRoot \"\/usr\/share\/phpldapadmin\/htdocs\"/" /etc/httpd/conf.d/ssl.conf
 
 #comment out
 sed -i -e "s/SSLProtocol all -SSLv2/#SSLProtocol all -SSLv2/" /etc/httpd/conf.d/ssl.conf
