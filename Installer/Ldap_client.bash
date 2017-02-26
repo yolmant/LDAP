@@ -9,12 +9,12 @@ apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 export DEBIAN_FRONTEND=noninteractive
 
 #install ldap and authentication client
-apt-get --yes install libpam-ldap nscd
+apt-get --yes install libpam-ldap nslcd
 unset DEBIAN_FRONTEND
 
 #modify ldap.conf 
 sed -i 's,base dc=example\,dc=net,base dc=NTI\,dc=local,g' /etc/ldap.conf
-sed -i 's,uri ldapi:///,uri ldap://10.128.0.2/,g' /etc/ldap.conf
+sed -i 's,uri ldapi:///,uri ldaps://10.128.0.2/,g' /etc/ldap.conf
 sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=net,g' /etc/ldap.conf
 
 #modify nsswitch.conf
