@@ -9,7 +9,7 @@ apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 export DEBIAN_FRONTEND=noninteractive
 
 #install ldap and authentication client
-apt-get --yes install libpam-ldap nslcd
+apt-get --yes install libpam-ldap nscd
 unset DEBIAN_FRONTEND
 
 #modify ldap.conf 
