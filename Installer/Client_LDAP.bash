@@ -18,7 +18,7 @@ if [ $exitstatus = 0 ]; then
 					apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 100 ]; then
 					export DEBIAN_FRONTEND=noninteractive
-				 	apt-get --yes install ldap-auth-client nslcd
+				 	apt-get --yes install ldap-auth-client nscd
 					unset DEBIAN_FRONTEND
 				fi
 				echo $i
