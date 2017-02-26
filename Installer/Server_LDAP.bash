@@ -249,6 +249,7 @@ EF
 		option=$?
 		if [ $option = 0 ]; then
 			Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
+			passw=$(slappasswd -s $password -h {SSHA})
 			option=$?
 		
 			if [ $option = 0 ]; then
@@ -264,7 +265,7 @@ objectclass: top
 sn: 1
 uid: $Nuser
 uidnumber: 1000
-userpassword: $Passwd
+userpassword: $passw
 EF
 
 				RootD=$(whiptail --title "LDAP User" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
