@@ -41,7 +41,7 @@ SSLCompression off
 SSLUseStapling on
 SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\"
 # Requires Apache >= 2.4.11
-# SSLSessionTickets Off" >> /etc/httpd/conf.d/ssl'
+# SSLSessionTickets Off" >> /etc/httpd/conf.d/ssl.conf'
 
 #Restart the hhtpd service
 systemctl restart httpd.service
