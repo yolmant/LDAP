@@ -249,7 +249,7 @@ EF
 		option=$?
 		if [ $option = 0 ]; then
 			Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
-			passw=$(slappasswd -s $password -h {SSHA})
+			passw=$(slappasswd -s $Passwd -h {SSHA})
 			option=$?
 		
 			if [ $option = 0 ]; then
