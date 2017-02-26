@@ -31,8 +31,8 @@ objectclass: posixAccount
 objectclass: top
 sn: 1
 uid: ldapuser1
-uidnumber: $passw
-userpassword: $password
+uidnumber: 1000
+userpassword: $passw
 EF
 
 ldapadd -x -w $admpass -D cn=admin,dc=NTI,dc=local -f ~/LDAP_config/groups.ldif
