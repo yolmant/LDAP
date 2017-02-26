@@ -38,7 +38,7 @@ if [ $exitstatus = 0 ]; then
 				{
 					#modify ldap.conf 
 					sed -i "s/base dc=example,dc=net/base $Domain/" /etc/ldap.conf
-					sed -i "s/uri ldapi:\/\/\//uri ldaps:\/\/$Ips\//" /etc/ldap.conf
+					sed -i "s/uri ldapi:\/\/\//uri ldap:\/\/$Ips\//" /etc/ldap.conf
 					sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=net,g' /etc/ldap.conf
 
 					#modify nsswitch.conf	
