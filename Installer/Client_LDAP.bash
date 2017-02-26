@@ -18,7 +18,7 @@ if [ $exitstatus = 0 ]; then
 					apt-get --yes update && apt-get --yes upgrade && apt-get --yes dist-upgrade
 				elif [ $i = 100 ]; then
 					export DEBIAN_FRONTEND=noninteractive
-				 	apt-get --yes install ldap-auth-client nscd
+				 	apt-get --yes install ldap-auth-client nslcd
 					unset DEBIAN_FRONTEND
 				fi
 				echo $i
@@ -35,7 +35,7 @@ if [ $exitstatus = 0 ]; then
 				{
 					#modify ldap.conf 
 					sed -i "s/base dc=example,dc=net/base $Domain/" /etc/ldap.conf
-					sed -i "s/uri ldapi:\/\/\//uri ldap:\/\/$Ips\//" /etc/ldap.conf
+					sed -i "s/uri ldapi:\/\/\//uri ldaps:\/\/$Ips\//" /etc/ldap.conf
 					sed -i 's,rootbinddn cn=manager\,dc=example\,dc=net,#rootbinddn cn=manager\,dc=example\,dc=net,g' /etc/ldap.conf
 
 					#modify nsswitch.conf	
