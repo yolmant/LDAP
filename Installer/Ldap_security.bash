@@ -2,6 +2,9 @@
 #disable the anonymous login
 sed -i -e "s/\/\/ \$servers->setValue('login','anon_bind',true);/\$servers->setValue('login','anon_bind',false);/" /etc/phpldapadmin/config.php
 
+#configuring Ldap secure
+sed -i -e "s/SLAPD_URLS=\"ldapi:\/\/\/ ldap:\/\/\/\"/SLAPD_URLS=\"ldapi:\/\/\/ ldap:\/\/\/ ldaps:\/\/\/\"/" /etc/sysconfig/slapd
+
 #instal SSL
 yum install mod_ssl
 
@@ -45,6 +48,9 @@ SSLUseStapling on
 SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\"
 # Requires Apache >= 2.4.11
 # SSLSessionTickets Off" >> /etc/httpd/conf.d/ssl.conf'
+
+#Restart Ldap service
+systemctl restart slapd.service
 
 #Restart the hhtpd service
 systemctl restart httpd.service
