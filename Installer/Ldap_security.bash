@@ -18,9 +18,12 @@ openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
 #include the detail of the phpldapadmin webside to the port 443
 sed -i "57s/.*/Alias \/phpldapadmin \/usr\/share\/phpldapadmin\/htdocs\nAlias \/ldapadmin \/usr\/share\/phpldapadmin\/htdocs\nDocumentRoot \"\/usr\/share\/phpldapadmin\/htdocs\"/" /etc/httpd/conf.d/ssl.conf
 
-#comment out
+#comment out and replace the certification and key
 sed -i -e "s/SSLProtocol all -SSLv2/#SSLProtocol all -SSLv2/" /etc/httpd/conf.d/ssl.conf
 sed -i -e "s/SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/#SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/" /etc/httpd/conf.d/ssl.conf
+sed -i -e "s/SSLCertificateFile \/etc\/pki\/tls\/certs\/localhost.crt/SSLCertificateFile \/etc\/ssl\/certs\/apache.crt/" /etc/httpd/conf.d/ssl.conf
+sed -i -e "s/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/localhost.key/SSLCertificateKeyFile \/etc\/ssl\/private\/apache.key/" /etc/httpd/conf.d/ssl.conf
+
 
 #include the Update Cypher suit
 sh -c 'echo "# Begin copied text
