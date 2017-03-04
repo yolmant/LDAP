@@ -192,20 +192,27 @@ EF
 								#dialog box with a loading bar
 								for ((i = 0 ; i <= 100 ; i+=20)); do
 									if [ $i = 20 ]; then
+										#install the basic configuration of LDAP admin
 										ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/db.ldif
 									elif [ $i = 40 ]; then
+										#instal the LDAP certifications
 										ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/certs.ldif
 									elif [ $i = 60 ]; then
+										#install the configuration of the schemas in LDAP
 										ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
 										ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif 
 										ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
 									elif [ $i = 80 ]; then
+										#install the configuration of access of the LDAP admin
 										ldapmodify -Y EXTERNAL  -H ldapi:/// -f /tmp/LDAP.cfg/monitor.ldif
 
 									elif [ $i = 100 ]; then
+										#install  the base of LDAP server
 										ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/base.ldif
 									fi
+									#show the loading bar
 									echo $i
+									#take a second
 									sleep 1
 								done
 							#dialog box
@@ -213,14 +220,14 @@ EF
 						fi
 					fi
 				fi
-			#dialog box
-			whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
-
 		elif [ $Menu = 3 ]; then
+			#dialog box that allows the user to introduce the name of the new group
 			Group=$(whiptail --title "LDAP group" --inputbox "please introduce the name of the group. for example:" 10 60 cn=namegroup,ou=Group,dc=example,dc=net  3>&1 1>&2 2>&3)
 			option=$?
+			#cut the variable Group to be introduced in the ldif file
 			Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
 			if [ $option = 0 ]; then
+				#create the ldif file with the new group
 				sh -c 'cat > /tmp/LDAP.cfg/groups.ldif' << EF
 dn: $Group
 cn: $Ngroup
@@ -228,21 +235,22 @@ gidnumber: 500
 objectclass: posixGroup
 objectclass: top
 EF
-
+				#dialog box that prove that the user is allow to modify the LDAP server. allows to introduce the root user (administrator)
 				RootD=$(whiptail --title "LDAP group" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
 				option=$?
 				if [ $option = 0 ]; then
+					#dialog box that allows to introduce the root password to confirm the configuration
 					Passwd=$(whiptail --title "LDAP group" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
 					option=$?
 					if [ $option = 0 ]; then
 						{	
-							ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif	
+							#install the new group in the LDAP server
+							ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif
+							#dialog box that verify configuration
 						} | whiptail --title "LDAP group" --msgbox "Group created" 10 60
 					fi	
 				fi
 			fi
-			whiptail --title "LDAP group" --msgbox "Program finished" 10 60
-
 		elif [ $Menu = 4 ]; then
 			User=$(whiptail --title "LDAP User" --inputbox "please introduce the name of the user. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)
 			Nuser=$(echo $User | awk -F[=,] '{print $2}')
@@ -284,8 +292,6 @@ EF
 					fi
 				fi
 			fi
-			whiptail --title "LDAP User" --msgbox "Program Finished" 10 60
-
 		elif [ $Menu = 5 ]; then
 			{
 				for ((i = 0 ; i <= 120 ; i+=20)); do
@@ -305,7 +311,8 @@ EF
 				done 
 			} | whiptail --gauge "Please wait while Uninstall" 6 60 0
 
-			whiptail --title "LDAP Installer" --msgbox "Packages removed. Program finished" 10 60
+			#dialog box
+			whiptail --title "LDAP Installer" --msgbox "Packages removed." 10 60
 		fi
 	else		
 		whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
