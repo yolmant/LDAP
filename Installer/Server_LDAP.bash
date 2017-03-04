@@ -218,9 +218,8 @@ EF
 
 		elif [ $Menu = 3 ]; then
 			Group=$(whiptail --title "LDAP group" --inputbox "please introduce the name of the group. for example:" 10 60 cn=namegroup,ou=Group,dc=example,dc=net  3>&1 1>&2 2>&3)
-			Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
 			option=$?
-
+			Ngroup=$(echo $Group | awk -F[=,] '{print $2}')
 			if [ $option = 0 ]; then
 				sh -c 'cat > /tmp/LDAP.cfg/groups.ldif' << EF
 dn: $Group
@@ -232,11 +231,9 @@ EF
 
 				RootD=$(whiptail --title "LDAP group" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
 				option=$?
-
 				if [ $option = 0 ]; then
 					Passwd=$(whiptail --title "LDAP group" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
 					option=$?
-
 					if [ $option = 0 ]; then
 						{	
 							ldapadd -x -w $Passwd -D $RootD -f /tmp/LDAP.cfg/groups.ldif	
