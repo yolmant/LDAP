@@ -6,10 +6,12 @@ do
 	#this is the multi-tasker. Install and configure the LDAP server
 	Menu=$(whiptail --title "LDAP" --menu "Choose an option" 15 60 5 \
 	"1" "Install LDAP packages" \
-	"2" "configure LDAP server" \
-	"3" "create groups" \
-	"4" "create users" \
-	"5" "Uninstall LDAP" 3>&1 1>&2 2>&3)
+	"2" "Configure LDAP server" \
+	"3" "Create groups" \
+	"4" "Create users" \
+	"5" "Delete Group" \
+	"6" "Delete user" \
+	"7" "Uninstall LDAP" 3>&1 1>&2 2>&3)
 
 	#check if the user press "ok" or "cancel"
 	exitstatus=$?
@@ -292,7 +294,34 @@ EF
 					fi
 				fi
 			fi
+		
 		elif [ $Menu = 5 ]; then
+			DelUser=$(whiptail --title "LDAP Delete User" --inputbox "please introduce the name of the user you want to delete. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)	
+			option=$?
+			Duser=$(echo $DelUser | awk -F[=,] '{print $2}')
+			userdel $Duser
+			rm -rf /home/$Duser
+			if [ $option = 0 ]; then
+				sh -c 'cat > /tmp/LDAP.cfg/users.ldif' << EF
+dn: $DelUser
+changetype: delete
+EF
+				RootD=$(whiptail --title "LDAP User" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
+				option=$?
+
+				if [ $option = 0 ]; then
+					Passw=$(whiptail --title "LDAP User" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
+					option=$?
+
+					if [ $option = 0 ]; then
+						{	
+							ldapadd -x -w $Passw -D $RootD -f /tmp/LDAP.cfg/users.ldif
+						} | whiptail --title "LDAP User" --msgbox "User Created" 10 60
+					fi
+				fi
+			fi
+ 
+		elif [ $Menu = 6 ]; then
 			{
 				for ((i = 0 ; i <= 120 ; i+=20)); do
 					if [ $i = 20 ]; then
@@ -314,6 +343,7 @@ EF
 			#dialog box
 			whiptail --title "LDAP Installer" --msgbox "Packages removed." 10 60
 		fi
+
 	else		
 		whiptail --title "LDAP configuration" --msgbox "Program Finished" 10 60
 		break
