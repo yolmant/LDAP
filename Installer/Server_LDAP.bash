@@ -264,7 +264,7 @@ EF
 				option=$?
 
 				if [ $option = 0 ]; then
-					sh -c 'cat > /tmp/LDAP.cfg/users.ldif' << EF
+					sh -c 'cat > /tmp/LDAP.cfg/delusers.ldif' << EF
 dn: $User
 cn: $Nuser
 gidnumber: 500
@@ -285,7 +285,6 @@ EF
 					if [ $option = 0 ]; then
 						Passw=$(whiptail --title "LDAP User" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
 						option=$?
-
 						if [ $option = 0 ]; then
 							{	
 								ldapadd -x -w $Passw -D $RootD -f /tmp/LDAP.cfg/users.ldif
@@ -294,8 +293,30 @@ EF
 					fi
 				fi
 			fi
-		
+			
 		elif [ $Menu = 5 ]; then
+			DelGroup=$(whiptail --title "LDAP Delete User" --inputbox "please introduce the name of the group you want to delete. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)	
+			option=$?
+			if [ $option = 0 ]; then
+				sh -c 'cat > /tmp/LDAP.cfg/delgroup.ldif' << EF
+dn: $DelGroup
+changetype: delete
+EF
+				RootD=$(whiptail --title "LDAP User" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
+				option=$?
+				if [ $option = 0 ]; then
+					Passw=$(whiptail --title "LDAP User" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
+					option=$?
+
+					if [ $option = 0 ]; then
+						{	
+							ldapadd -x -w $Passw -D $RootD -f /tmp/LDAP.cfg/users.ldif
+						} | whiptail --title "LDAP User" --msgbox "User Deleted" 10 60
+					fi
+				fi
+			fi
+			
+		elif [ $Menu = 6 ]; then
 			DelUser=$(whiptail --title "LDAP Delete User" --inputbox "please introduce the name of the user you want to delete. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)	
 			option=$?
 			Duser=$(echo $DelUser | awk -F[=,] '{print $2}')
@@ -316,12 +337,12 @@ EF
 					if [ $option = 0 ]; then
 						{	
 							ldapadd -x -w $Passw -D $RootD -f /tmp/LDAP.cfg/users.ldif
-						} | whiptail --title "LDAP User" --msgbox "User Created" 10 60
+						} | whiptail --title "LDAP User" --msgbox "Group Deleted" 10 60
 					fi
 				fi
 			fi
  
-		elif [ $Menu = 6 ]; then
+		elif [ $Menu = 7 ]; then
 			{
 				for ((i = 0 ; i <= 120 ; i+=20)); do
 					if [ $i = 20 ]; then
