@@ -264,7 +264,7 @@ EF
 				option=$?
 
 				if [ $option = 0 ]; then
-					sh -c 'cat > /tmp/LDAP.cfg/delusers.ldif' << EF
+					sh -c 'cat > /tmp/LDAP.cfg/users.ldif' << EF
 dn: $User
 cn: $Nuser
 gidnumber: 500
@@ -323,7 +323,7 @@ EF
 			userdel $Duser
 			rm -rf /home/$Duser
 			if [ $option = 0 ]; then
-				sh -c 'cat > /tmp/LDAP.cfg/users.ldif' << EF
+				sh -c 'cat > /tmp/LDAP.cfg/delusers.ldif' << EF
 dn: $DelUser
 changetype: delete
 EF
