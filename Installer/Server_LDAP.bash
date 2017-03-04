@@ -255,9 +255,9 @@ EF
 			fi
 		elif [ $Menu = 4 ]; then
 			User=$(whiptail --title "LDAP User" --inputbox "please introduce the name of the user. for example:" 10 60 cn=username,ou=People,dc=example,dc=net  3>&1 1>&2 2>&3)
+			option=$?
 			Nuser=$(echo $User | awk -F[=,] '{print $2}')
 			useradd $Nuser
-			option=$?
 			if [ $option = 0 ]; then
 				Passwd=$(whiptail --title "LDAP User" --passwordbox "please introduce the user password." 10 60 3>&1 1>&2 2>&3)
 				passw=$(slappasswd -s $Passwd -h {SSHA})
@@ -272,7 +272,7 @@ givenname: $Nuser
 homedirectory: /home/$Nuser
 objectclass: inetOrgPerson
 objectclass: posixAccount
-objectclass: top	
+objectclass: top
 sn: 1
 uid: $Nuser
 uidnumber: 1000
@@ -281,7 +281,6 @@ EF
 
 					RootD=$(whiptail --title "LDAP User" --inputbox "please introduce the LDAP account for root to verify administrator. for example:" 10 60 cn=admin,dc=example,dc=net 3>&1 1>&2 2>&3)
 					option=$?
-
 					if [ $option = 0 ]; then
 						Passw=$(whiptail --title "LDAP User" --passwordbox "please introduce the LDAP root account password." 10 60 3>&1 1>&2 2>&3)
 						option=$?
