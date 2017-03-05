@@ -39,7 +39,7 @@ do
 						#Install the PHP LDAP package
 						yum -y install phpldapadmin
 						#instal SSL
-						yum install mod_ssl
+						yum -y install mod_ssl
 					fi
 					echo $i
 					sleep 1
