@@ -69,68 +69,16 @@ do
 				
 				#configuring Ldap secure
 				sed -i -e "s/SLAPD_URLS=\"ldapi:\/\/\/ ldap:\/\/\/\"/SLAPD_URLS=\"ldapi:\/\/\/ ldap:\/\/\/ ldaps:\/\/\/\"/" /etc/sysconfig/slapd
-
-
+				
+				#Restart Ldap service
+				systemctl restart slapd.service
+				#Restart the hhtpd service
+				systemctl restart httpd.service
+				#tell Linux what is going on
+				setsebool -P httpd_can_connect_ldap on
+				
 			#dialog box
 			} | whiptail --title "LDAP Installer" --msgbox "services started and enabled" 10 60
-			
-			#create a new directory to store the key
-			mkdir /etc/ssl/private
-
-			#change the permission of the new directory
-			chmod 700 /etc/ssl/private
-			
-			{
-				#a Bar loading that charge from 0% to 100% by 20%
-				for ((i = 0 ; i <= 100 ; i+=20)); do
-					if [ $i = 20 ]; then
-						#creating the certification and key
-						openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache.key -out /etc/ssl/certs/apache.crt
-						openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-					elif [ $i = 40 ]; then
-						#include the detail of the phpldapadmin webside to the port 443
-						sed -i "57s/.*/Alias \/phpldapadmin \/usr\/share\/phpldapadmin\/htdocs\nAlias \/ldapadmin \/usr\/share\/phpldapadmin\/htdocs\nDocumentRoot \"\/usr\/share\/phpldapadmin\/htdocs\"/" /etc/httpd/conf.d/ssl.conf
-					elif [ $i = 60 ]; then
-						#comment out and replace the certification and key
-						sed -i -e "s/SSLProtocol all -SSLv2/#SSLProtocol all -SSLv2/" /etc/httpd/conf.d/ssl.conf
-						sed -i -e "s/SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/#SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/" /etc/httpd/conf.d/ssl.conf
-						sed -i -e "s/SSLCertificateFile \/etc\/pki\/tls\/certs\/localhost.crt/SSLCertificateFile \/etc\/ssl\/certs\/apache.crt/" /etc/httpd/conf.d/ssl.conf
-						sed -i -e "s/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/localhost.key/SSLCertificateKeyFile \/etc\/ssl\/private\/apache.key/" /etc/httpd/conf.d/ssl.conf
-					elif [ $i = 80 ]; then
-						#include the Update Cypher suit
-						sh -c 'echo "# Begin copied text
-# from https://cipherli.st/
-# and https://raymii.org/s/tutorials/Strong_SSL_Security_On_Apache2.html
-
-SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
-SSLProtocol All -SSLv2 -SSLv3
-SSLHonorCipherOrder On
-# Disable preloading HSTS for now.  You can use the commented out header line that includes
-# the \"preload\" directive if you understand the implications.
-#Header always set Strict-Transport-Security \"max-age=63072000; includeSubdomains; preload\"
-Header always set Strict-Transport-Security \"max-age=63072000; includeSubdomains\"
-Header always set X-Frame-Options DENY
-Header always set X-Content-Type-Options nosniff
-# Requires Apache >= 2.4
-SSLCompression off
-SSLUseStapling on
-SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\"
-# Requires Apache >= 2.4.11
-# SSLSessionTickets Off" >> /etc/httpd/conf.d/ssl.conf'
-					elif [ $i = 100 ]; then
-						#Restart Ldap service
-						systemctl restart slapd.service
-						#Restart the hhtpd service
-						systemctl restart httpd.service
-						#tell Linux what is going on
-						setsebool -P httpd_can_connect_ldap on
-						
-					fi
-					echo $i
-					sleep 1
-				done 
-			#show a dialog box of the bar changing
-			} | whiptail --gauge "Please wait while configuring SSL" 6 60 0
 
 		#configuration of LDAP server
 		elif [ $Menu = 2 ]; then 
@@ -244,12 +192,70 @@ EF
 								chown -R ldap:ldap /etc/openldap/certs/*.pem	
 							#dialog box
 							} | whiptail --title "LDAP configuration" --msgbox "certifications created" 10 60
-							{
-								#copy the schemas to the Ldap directory
-								cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
-								#changing the permitions
-								chown ldap:ldap /var/lib/ldap/*
+					
+							#copy the schemas to the Ldap directory
+							cp /usr/share/openldap-servers/DB_CONFIG.example /var/lib/ldap/DB_CONFIG
+							
+							#changing the permitions
+							chown ldap:ldap /var/lib/ldap/*
+							
+							#create a new directory to store the key
+							mkdir /etc/ssl/private
 
+							#change the permission of the new directory
+							chmod 700 /etc/ssl/private
+			
+							{
+								#a Bar loading that charge from 0% to 100% by 20%
+								for ((i = 0 ; i <= 100 ; i+=20)); do
+									if [ $i = 20 ]; then
+										#creating the certification and key
+										openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache.key -out /etc/ssl/certs/apache.crt -subj "/C=$Co/ST=$St/L=$ci/O=$Org/OU=$O/CN=$Ca"
+										openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+									elif [ $i = 40 ]; then
+										#include the detail of the phpldapadmin webside to the port 443
+										sed -i "57s/.*/Alias \/phpldapadmin \/usr\/share\/phpldapadmin\/htdocs\nAlias \/ldapadmin \/usr\/share\/phpldapadmin\/htdocs\nDocumentRoot \"\/usr\/share\/phpldapadmin\/htdocs\"/" /etc/httpd/conf.d/ssl.conf
+									elif [ $i = 60 ]; then
+										#comment out and replace the certification and key
+										sed -i -e "s/SSLProtocol all -SSLv2/#SSLProtocol all -SSLv2/" /etc/httpd/conf.d/ssl.conf
+										sed -i -e "s/SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/#SSLCipherSuite HIGH:MEDIUM:\!aNULL:\!MD5:\!SEED:\!IDEA/" /etc/httpd/conf.d/ssl.conf
+										sed -i -e "s/SSLCertificateFile \/etc\/pki\/tls\/certs\/localhost.crt/SSLCertificateFile \/etc\/ssl\/certs\/apache.crt/" /etc/httpd/conf.d/ssl.conf
+										sed -i -e "s/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/localhost.key/SSLCertificateKeyFile \/etc\/ssl\/private\/apache.key/" /etc/httpd/conf.d/ssl.conf
+									elif [ $i = 80 ]; then
+										#include the Update Cypher suit
+										sh -c 'echo "# Begin copied text
+# from https://cipherli.st/
+# and https://raymii.org/s/tutorials/Strong_SSL_Security_On_Apache2.html
+
+SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+SSLProtocol All -SSLv2 -SSLv3
+SSLHonorCipherOrder On
+# Disable preloading HSTS for now.  You can use the commented out header line that includes
+# the \"preload\" directive if you understand the implications.
+#Header always set Strict-Transport-Security \"max-age=63072000; includeSubdomains; preload\"
+Header always set Strict-Transport-Security \"max-age=63072000; includeSubdomains\"
+Header always set X-Frame-Options DENY
+Header always set X-Content-Type-Options nosniff
+# Requires Apache >= 2.4
+SSLCompression off
+SSLUseStapling on
+SSLStaplingCache \"shmcb:logs/stapling-cache(150000)\"
+# Requires Apache >= 2.4.11
+# SSLSessionTickets Off" >> /etc/httpd/conf.d/ssl.conf'
+									elif [ $i = 100 ]; then
+										#Restart Ldap service
+										systemctl restart slapd.service
+										#Restart the hhtpd service
+										systemctl restart httpd.service
+						
+									fi
+									echo $i
+									sleep 1
+								done 
+							#show a dialog box of the bar changing
+							} | whiptail --gauge "Please wait while configuring SSL" 6 60 0
+							
+							{
 								#dialog box with a loading bar
 								for ((i = 0 ; i <= 100 ; i+=20)); do
 									if [ $i = 20 ]; then
